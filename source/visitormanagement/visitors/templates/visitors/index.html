@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static '/lib/datatable/css/dataTables.bootstrap4.min.css' %}">
+{% endblock styles %}
+
+{% block content %}
+
+<div class="">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active mr-auto" id="nav-home-tab" aria-selected="true"><b>visitors list</b></a>
+            <a class="nav-item nav-link active" href="{% url 'visitors:onGetCreate' %}">
+                <input type="button" value="create new" class="btn btn-outline-primary btn-sm"
+                    style="font-weight: bold;" />
+            </a>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="nav-home-tab">
+            <br />
+            <table id="datatable" class="table table-sm table-hover" style="width:100%;">
+                <thead>
+                    <tr class="text-dark">
+                        <th>
+                            <font color="#0C4B33"><small><b>#</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>visitor_name</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>visitor_phone</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>visitor_from</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>company_to_visit</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>purpose_of_visit</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>visit_date</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>checked_in</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>checked_out</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>action</b></small></font>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visitor in visitors %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ visitor.visitor_name }}</td>
+                        <td>{{ visitor.visitor_phone }}</td>
+                        <td>{{ visitor.visitor_from }}</td>
+                        <td>{{ visitor.company.company_name }}</td>
+                        <td>{{ visitor.purpose_of_visit }}</td>
+                        <td>{{ visitor.visit_date|date:"Y-m-d" }}</td>
+                        <td>{{ visitor.check_in|date:"H:i a" }}</td>
+                        <td>{{ visitor.check_out|date:"H:i a" }}</td>
+                        <td>
+                            <a href="#">link</a> |
+                            <a href="{% url 'visitors:onPostDelete' visitor.id %}">delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'lib/datatable/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'lib/datatable/js/dataTables.bootstrap4.min.js' %}"></script>
+
+<script>
+    $('#datatable').DataTable();
+</script>
+
+{% endblock script %}

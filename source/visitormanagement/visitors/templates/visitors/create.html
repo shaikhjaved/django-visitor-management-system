@@ -1,0 +1,250 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<form id="visitorForm" action="{% url 'visitors:onPostCreate' %}" method="post" autocomplete="off">
+    {% csrf_token %}
+    <div class="list-group">
+        <div class="list-group-item">
+            <div class="row">
+                <div class="col"><b>create new visitors</b></div>
+                <div class="col">
+                    <button type="submit" style="float:right;" class="btn btn-primary btn-sm btn-submit">submit</button>
+                </div>
+            </div>
+        </div>
+        <div class="list-group-item">
+            <div class="row">
+                <div class="col-9">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="visitor_phone" class="col-form-label">visitor_phone</label>
+                                        <input type="number" class="form-control column" id="visitor_phone"
+                                            name="visitor_phone" min=0,
+                                            onKeyPress="if(this.value.length === 10) return false;">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="visitor_name" class="col-form-label">visitor_name</label>
+                                        <input type="text" class="form-control column" id="visitor_name"
+                                            name="visitor_name">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="visitor_from" class="col-form-label">visitor_from</label>
+                                        <input type="text" class="form-control column" id="visitor_from"
+                                            name="visitor_from">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="selectedcompanies" class="col-form-label">company_to_visit</label>
+                                        <select class="form-control column" id="selectedcompanies"
+                                            name="selectedcompanies">
+                                            <option value="0" disabled selected>--SELECT--</option>
+                                            {% for company in companies %}
+                                            <option value="{{ company.id }}">{{ company.company_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="purpose_of_visit" class="col-form-label">purpose_of_visit</label>
+                                        <input type="text" class="form-control column" id="purpose_of_visit"
+                                            name="purpose_of_visit">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="card webcamcard">
+                        <div class="card-body">
+                            <div class="row">
+                                <a class="d-flex align-items-center text-muted ml-auto camera-on" href="#">
+                                    <font color="red"><span data-feather="camera"></span></font>
+                                </a>
+                                <a class="d-flex align-items-center text-muted mr-auto ml-4 repeat camera-off" href="#">
+                                    <font color="red"><span data-feather="camera-off"></span></font>
+                                </a>
+                            </div>
+                            <hr>
+                            <div id="webcam"></div>
+                            <input type="hidden" id="visitor_image" name="visitor_image">
+                            <button type="button" class="btn btn-primary btn-sm btn-block btn-capture mt-2"
+                                style="display:none;">capture</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="list-group-item"><a href="{{request.META.HTTP_REFERER}}">Go back</a></div>
+    </div>
+</form>
+
+<div class="modal fade" id="print-visitor-modal" tabindex="-1" role="dialog"
+    aria-labelledby="print-visitor-modalModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-muted"><strong>print-visitor-modal</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary btn-print-visitor">print-visitor</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static 'js/webcamjs/webcam.min.js' %}"></script>
+<!-- configure a few settings and attach camera -->
+<script>
+    $(document).on("click", ".camera-on", function (e) {
+
+        Webcam.set({
+            width: 195,
+            height: 200,
+            image_format: 'jpeg',
+            jpeg_quality: 90,
+            constraints: {
+                width: { exact: 195 },
+                height: { exact: 200 }
+            }
+        });
+        Webcam.attach('#webcam');
+        $('.btn-capture').css('display', 'block')
+        $("video").addClass('card rounded');
+
+    });
+
+    $(document).on("click", ".camera-off", function (e) {
+        Webcam.reset();
+    });
+</script>
+
+<script>
+    $(document).on("click", ".btn-capture", function (e) {
+        Webcam.snap(function (data_uri) {
+            document.getElementById('webcam').innerHTML = '<img class="rounded" src="' + data_uri + '"/>';
+            $("#visitor_image").val(data_uri)
+
+            if (!$("#visitor_image").val()) {
+                $(".webcamcard").removeClass('border border-danger rounded').addClass('border border-danger rounded');
+                $(".webcamcard").attr("tabindex", -1).focus();
+                e.preventDefault();
+                return false;
+            } else {
+                $(".webcamcard").removeClass('border border-danger rounded').addClass('border border-success rounded');;
+            }
+
+        });
+    });
+</script>
+
+<script>
+
+    $('#visitorForm').submit(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        $('.column').each(function () {
+            validateControl($(this), e);
+            $('.column').eq(0).focus();
+        });
+
+        if (!$("#visitor_image").val()) {
+            $(".webcamcard").removeClass('border border-danger rounded').addClass('border border-danger rounded');
+            $(".webcamcard").attr("tabindex", -1).focus();
+            e.preventDefault();
+            return false;
+        } else {
+            $(".webcamcard").removeClass('border border-danger rounded').addClass('border border-success rounded');
+        }
+
+        let html = ''
+        html += '<div id="section-to-print" class="offset-3">'
+        html += '<table style="width:69%" class="table table-sm table-bordered">'
+        html += '<tbody>'
+
+        html += '<tr>'
+        html += '<td><h5 class="card-title text-center">visitor info</h5></td>'
+        html += '</tr>'
+
+        html += '<tr>'
+        html += '<td style="text-align: center; vertical-align: middle;"><img width="100" height="100" class="rounded" src="' + $("#visitor_image").val() + '"/></td>'
+        html += '</tr>'
+
+        html += '<tr>'
+        html += '<td>visitor_name : ' + $("#visitor_name").val() + '</td>'
+        html += '</tr>'
+
+        html += '<tr>'
+        html += '<td>visitor_from : ' + $("#visitor_from").val() + '</td>'
+        html += '</tr>'
+
+        html += '<tr>'
+        html += '<td>company_to_visit : ' + $('#selectedcompanies :selected').text() + '</td>'
+        html += '</tr>'
+
+        html += '<tr>'
+        html += '<td>purpose_of_visit : ' + $("#purpose_of_visit").val() + '</td>'
+        html += '</tr>'
+
+        html += '<tr>'
+        html += '<td>checked_in : {% now "f" %}</td>'
+        html += '</tr>'
+
+        html += '</tbody>'
+        html += '</table></div>'
+        $('#print-visitor-modal').find('.modal-body').html(html);
+
+        return false;
+
+        $.ajax({
+            data: $(this).serialize(),
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            success: function (response) {
+                if (response.visitor_id > 0) {
+                    $('#print-visitor-modal').modal({ show: false, backdrop: 'static', keyboard: false })
+                    $('#print-visitor-modal').modal('show');
+                }
+            }
+        });
+        return false;
+    });
+
+</script>
+
+<script>
+    $(document).on("click", ".btn-print-visitor", function (e) {
+        window.print();
+    });
+</script>
+
+{% endblock script %}

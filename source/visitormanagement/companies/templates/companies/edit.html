@@ -1,0 +1,106 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<form od="companyForm" action="{% url 'companies:onPostEdit' companies.id %}" method="post" autocomplete="off">
+  {% csrf_token %}
+  <div class="list-group">
+        <div class="list-group-item">
+            <div class="row">
+                <div class="col-6"><b>edit company</b></div>
+                <div class="col-6"></div>
+            </div>
+        </div>
+        <div class="list-group-item">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                    <div class="col-6">
+                            <div class="form-group">
+                                <label for="company_name" class="col-form-label">company_name</label>
+                                <input type="text" class="form-control" id="company_name" name="company_name" value="{{ companies.company_name }}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="company_phone" class="col-form-label">company_phone</label>
+                                <input type="number" class="form-control" id="company_phone" name="company_phone" min = 1, onKeyPress = "if(this.value.length === 10) return false;" value="{{ companies.company_phone }}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="company_email" class="col-form-label">company_email</label>
+                                <input type="email" class="form-control" id="company_email" name="company_email" value="{{ companies.company_email }}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="company_owner" class="col-form-label">company_owner</label>
+                                <input type="text" class="form-control" id="company_owner" name="company_owner" value="{{ companies.company_owner }}">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="company_address" class="col-form-label">company_address</label>
+                                <textarea class="form-control" id="company_address" rows="3" onKeyPress = "if(this.value.length == 250) return false;" name="company_address">{{ companies.company_address }}</textarea>
+                                <small id="company_address" class="form-text text-muted">max. 250 characters. <font color="blue"><span id="text-remaining"></span></font></small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="contact_person" class="col-form-label">contact_person</label>
+                                <input type="text" class="form-control" id="contact_person" name="contact_person" value="{{ companies.contact_person }}">
+                            </div>
+                        </div>                        
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-primary btn-submit">submit</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2"></div>
+            </div>
+        </div>
+        <div class="list-group-item"><a href="{{request.META.HTTP_REFERER}}">Go back</a></div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+    $(document).on('click', '.btn-submit', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        $('.column').each(function(){
+            validateControl($(this), e);
+            $('.column').eq(0).focus();
+        });
+
+        $('#companyForm').submit();
+    });
+</script>
+
+<script>
+    $('#company_address').on('input propertychange paste', function (e) {
+        var len = $(this).val().trim().length;
+        var str = $(this).val();
+        var parts = [];
+        var partsize = 250;
+        while (str) {
+            if (str.length < partsize) {
+                var rtext = (partsize - str.length) + " text remaining ";
+                parts.push(str);
+                break;
+            }
+            else {
+                parts.push(str.substr(0, partsize));
+                str = str.substr(partsize);
+            }
+        }
+        document.getElementById('text-remaining').innerHTML = rtext === undefined ? 0 : rtext;
+    });
+</script>
+
+{% endblock script %}

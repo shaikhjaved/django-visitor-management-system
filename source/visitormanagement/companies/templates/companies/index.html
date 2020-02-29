@@ -1,0 +1,73 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static '/lib/datatable/css/dataTables.bootstrap4.min.css' %}">
+{% endblock styles %}
+
+{% block content %}
+
+<div class="">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active mr-auto" id="nav-home-tab" aria-selected="true"><b>companies list</b></a>
+            <a class="nav-item nav-link active" href="{% url 'companies:onGetCreate' %}">
+                <input type="button" value="create new" class="btn btn-outline-primary btn-sm"
+                    style="font-weight: bold;" />
+            </a>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="nav-home-tab">
+            <br />
+            <table id="datatable" class="table table-sm table-hover" style="width:100%;">
+                <thead>
+                    <tr class="text-dark">
+                        <th>
+                            <font color="#0C4B33"><small><b>#</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>company_name</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>company_phone</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>company_owner</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>contact_person</b></small></font>
+                        </th>
+                        <th>
+                            <font color="#0C4B33"><small><b>action</b></small></font>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in companies %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ company.company_name }}</td>
+                        <td>{{ company.company_phone }}</td>
+                        <td>{{ company.company_owner }}</td>
+                        <td>{{ company.contact_person }}</td>
+                        <td>
+                            <a href="{% url 'companies:onGetEdit' company.id %}">edit</a> |
+                            <a href="{% url 'companies:onPostDelete' company.id %}">delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'lib/datatable/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'lib/datatable/js/dataTables.bootstrap4.min.js' %}"></script>
+<script>
+    $('#datatable').DataTable();
+</script>
+{% endblock script %}

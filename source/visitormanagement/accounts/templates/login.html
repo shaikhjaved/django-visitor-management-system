@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/floating-labels.css' %}">
+    <title>{{ settings.APP_NAME }} : Login</title>
+</head>
+
+<body class="text-monospace">
+    <div class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-lg-3 col-sm-3"></div>
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <form action="{% url 'accounts:onPostLogin' %}" method="post" class="form-signin" role="form">
+                    <h5 class="card-title text-center">
+                                <font color="#5A5454" size="5">visitor-management-system</font>
+                            </h5>
+                    {% csrf_token %}
+                    <div class="card p-3 px-md-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">
+                                <font color="#5A5454" size="5">Welcome Back, <br />Sign in to continue</font>
+                            </h5>
+                            <hr class="bg-primary" />
+                            <div class="form-label-group">
+                                <input name="username" type="text" class="form-control col-md-12"
+                                    placeholder="email or username" autofocus />
+                                <label for="username">email or username</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="password" name="password" class="form-control col-md-12"
+                                    placeholder="password" />
+                                <label for="Password">password</label>
+                            </div>
+                            <button class="btn btn-lg btn-secondary col-md-12" type="submit">Sign in</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col"></div>
+            <div style="width: 28.7%;">
+                {% for message in messages %}
+                <div class="alert alert-light text-center" role="alert">
+                    <font color="red"><span class="text-center">{{message}}</span></font>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+    <script src="{% static 'lib/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'lib/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+
+</html>

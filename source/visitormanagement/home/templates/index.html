@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">today's visitors <span data-feather="bar-chart-2"></span></h5>
+        <h6 class="card-subtitle mb-2 text-muted"><b style="color: #0C4B33;">{{ 5|length }}</b></h6>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">companies <span data-feather="briefcase"></span></h5>
+        <h6 class="card-subtitle mb-2 text-muted"><b style="color: #0C4B33;">{{ 5|length }}</b></h6>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
